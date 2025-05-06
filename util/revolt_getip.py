@@ -6,15 +6,15 @@ from pathlib import Path
 
 
 CONFIG_DIR = Path(Path.home(), 'revolt_config')
-DATA_FILE = Path(CONFIG_DIR, 'ip_data.lst')
+DATA_FILE = Path(CONFIG_DIR, 'ip_data.csv')
 
 
 class DataItem:
     def __init__(self, *args):
-        self.name = args[0] if len(args) > 0 else None
-        self.ip = args[1] if len(args) > 1 else None
-        self.mac = args[2] if len(args) > 2 else None
-        self.ports = args[3] if len(args) > 3 else None
+        self.name = args[0] if len(args) > 0 else ''
+        self.ip = args[1] if len(args) > 1 else ''
+        self.mac = args[2] if len(args) > 2 else ''
+        self.ports = args[3] if len(args) > 3 else ''
 
     def parse(self, _args: argparse.Namespace) -> None:
         for k in self.__dict__:
@@ -23,7 +23,7 @@ class DataItem:
                 setattr(self, k, val)
 
     def get_line(self) -> str:
-        return f'{self.name} {self.ip} {self.mac} {self.ports}'
+        return ';'.join([self.name, self.ip, self.mac, self.ports])
 
 
 def parse_args():
@@ -49,7 +49,7 @@ def read() -> dict:
 
     with open(DATA_FILE, 'r') as f:
         for line in f:
-            item = DataItem(*[i.strip() for i in line.split()])
+            item = DataItem(*[i.strip() for i in line.split(';')])
             items[item.name] = item
 
     return items
